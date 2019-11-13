@@ -76,62 +76,89 @@ class Aresta():
 
 class Grafo:
     def __init__(self, direcionado=True):
-        self.lista_Vertices = []
-        self.lista_Arestas = []
+        self.vertices = []
+        self.arestas = []
         self.direcionado = direcionado
         self.tempo = 0
 
-    def novo_Vertice(self, identificador):
-        self.lista_Vertices.append(Vertice(identificador))
+    def novoVertice(self, identificador):
+        self.vertices.append(Vertice(identificador))
 
-    def busca_Aresta(self, u, v):  # Método recebe dois objetos do tipo Vértice
-        for w in self.lista_Arestas:
-            origem = w.getOrigem()
-            destino = w.getDestino()
-            if origem.getId() == u.getId() and destino.getId() == v.getId():
-                return w
-
-    def busca_Vertice(self, identificador):  # Método recebe um int
-        for i in self.lista_Vertices:
+    def buscaVertice(self, identificador):  # Método recebe um int
+        for i in self.vertices:
             if identificador == i.getId():
                 return i
         else:
             return None
 
-    def nova_Aresta(self, origem, destino, peso):  # Método recebe dois identificadores
-        origem_aux = self.busca_Vertice(origem)
-        destino_aux = self.busca_Vertice(destino)
+    def novaAresta(self, origem, destino, peso):  # Método recebe dois identificadores
+        origem_aux = self.buscaVertice(origem)
+        destino_aux = self.buscaVertice(destino)
         if (origem_aux is not None) and (destino_aux is not None):
-            self.lista_Arestas.append(Aresta(origem_aux, destino_aux, peso))
+            self.arestas.append(Aresta(origem_aux, destino_aux, peso))
         else:
             print("Um do Vertice ou ambos são invalidos")
 
         if self.direcionado == False:
-            self.lista_Arestas.append(Aresta(destino_aux, origem_aux, peso))  # Aresta(u,v) e Aresta(v,u)
+            self.arestas.append(Aresta(destino_aux, origem_aux, peso))  # Aresta(u,v) e Aresta(v,u)
 
-    def esta_Vazio(self):
-        if len(self.lista_Vertices) == 0:
+ def buscaAresta(self, u, v):  # Método recebe dois objetos do tipo Vértice
+        for w in self.arestas:
+            origem = w.getOrigem()
+            destino = w.getDestino()
+            if origem.getId() == u.getId() and destino.getId() == v.getId():
+                return w
+
+   def matrixAdjacencia(self):
+        destino_Aux = self.buscaVertice(destino)
+        if len(destino_Aux.predecessor) == 0:
+            print("Não há caminho")
+        else:
+            print(destino)
+            self.imprime_Grafo(origem, destino)
+
+   def imprimeGrafocomDestino(self, origem, destino):
+        destino_Aux = self.buscaVertice(destino)
+        if len(destino_Aux.predecessor) == 0:
+            print("Não há caminho")
+        else:
+            print(destino)
+            self.imprimeGrafo(origem, destino)
+
+    def imprimeGrafo(self, origem, destino):
+        if origem == destino:
+            print("Fim")
+        else:
+            destino_Aux = self.buscaVertice(destino)
+            if len(destino_Aux.predecessor) == 0:
+                print("Não há caminho")
+            else:
+                print(destino_Aux.predecessor[0])
+                self.imprimeGrafo(origem, destino_Aux.predecessor[0])
+
+    def estaVazio(self):
+        if len(self.vertices) == 0:
             return True
         else:
             return False
 
-    def busca_Adjacente(self, u):  # Método recebe um vertice
-        for i in range(len(self.lista_Arestas)):
-            origem = self.lista_Arestas[i].getOrigem()
-            destino = self.lista_Arestas[i].getDestino()
+    def buscaAdjacente(self, u):  # Método recebe um vertice
+        for i in range(len(self.arestas)):
+            origem = self.arestas[i].getOrigem()
+            destino = self.arestas[i].getDestino()
             if (u.getId() == origem.getId()) and (destino.getVisitado() == False):
                 destino.setVisitado(True)  # Para que não retorn o mesmo vertice seguidas veses
                 return destino
         else:
             return None
 
-    def Depth_first_search(self):
+    def depthFirstSearch(self):
         self.tempo = 0
-        for v in self.lista_Vertices:
+        for v in self.vertices:
             v.setVisitado(False)
             v.input = 0
             v.output = 0
-        for v in self.lista_Vertices:
+        for v in self.vertices:
             if not v.getVisitado():
                 self.visita(v)
 
@@ -140,32 +167,32 @@ class Grafo:
         u.setVisitado(True)
         self.tempo += 1
         u.setImput(self.tempo)
-        v = self.busca_Adjacente(u)  # retorna apenas não visitado ou nulo
+        v = self.buscaAdjacente(u)  # retorna apenas não visitado ou nulo
         while v is not None:
             v.predecessor.append(u.getId())
             self.visita(v)
-            v = self.busca_Adjacente(u)
+            v = self.buscaAdjacente(u)
 
         self.tempo += 1
         u.setOutput(self.tempo)
         print("Voltando para: ", u.predecessor)
 
-    def inicializa_Fonte(self, fonte):  # Função usado no BFS e Dijkstra Método recebe um Objeto
-        for v in self.lista_Vertices:
+    def inicializaFonte(self, fonte):  # Função usado no BFS e Dijkstra Método recebe um Objeto
+        for v in self.vertices:
             v.setEstimativa(99999)
             v.setVisitado(False)
         fonte.setVisitado(True)
         fonte.setEstimativa(0)
 
-    def Breadth_first_search(self, identificador):
-        fonte = self.busca_Vertice(identificador)
+    def breadthFirstSearch(self, identificador):
+        fonte = self.buscaVertice(identificador)
         if fonte is None:
             return "Vertce Nulo"
-        self.inicializa_Fonte(fonte)
+        self.inicializaFonte(fonte)
         lista = [fonte]
         while 0 != len(lista):
             u = lista[0]
-            v = self.busca_Adjacente(u)  # retorna adjacente não visitado
+            v = self.buscaAdjacente(u)  # retorna adjacente não visitado
             if v is None:
                 lista.pop(0)  # retiro o vertice sem adjacentes
 
@@ -178,46 +205,27 @@ class Grafo:
 
             u.setVisitado(True)
 
-    def imprime_Grafo_com_Destino(self, origem, destino):
-        destino_Aux = self.busca_Vertice(destino)
-        if len(destino_Aux.predecessor) == 0:
-            print("Não há caminho")
-        else:
-            print(destino)
-            self.imprime_Grafo(origem, destino)
-
-    def imprime_Grafo(self, origem, destino):
-        if origem == destino:
-            print("Fim")
-        else:
-            destino_Aux = self.busca_Vertice(destino)
-            if len(destino_Aux.predecessor) == 0:
-                print("Não há caminho")
-            else:
-                print(destino_Aux.predecessor[0])
-                self.imprime_Grafo(origem, destino_Aux.predecessor[0])
-
-    def relaxa_Vertice(self, u, v, w):
+    def relaxaVertice(self, u, v, w):
         if v.getEstimativa() > (u.getEstimativa() + w.getPeso()):
             v.setEstimativa(u.getEstimativa() + w.getPeso())
             v.predecessor.append(u.getId())  # guarda apenas o id
 
-    def Dijkstra(self, origem):
-        fonte = self.busca_Vertice(origem)
+    def dijkstra(self, origem):
+        fonte = self.buscaVertice(origem)
         if fonte is None:
             return "Vértice Nulo"
 
-        self.inicializa_Fonte(fonte)
+        self.inicializaFonte(fonte)
         lista = []
         resposta = []  # conjunto resposta
-        for i in self.lista_Vertices:
+        for i in self.vertices:
             lista.append(i)
         while len(lista) != 0:
             lista.sort()  # ordeno a lista baseado na estimativa
             u = lista[0]
-            v = self.busca_Adjacente(u)
+            v = self.buscaAdjacente(u)
             if v is None:
-                for i in self.lista_Vertices:  # como o vetice u marcou seus adj como visitado nenhum outro vértice visitara
+                for i in self.vertices:  # como o vetice u marcou seus adj como visitado nenhum outro vértice visitara
                     i.setVisitado(
                         False)  # esse vertice então preciso marcar como não visitado pra bucar os adj de outro vertice
                 self.tempo += 1
@@ -226,27 +234,27 @@ class Grafo:
                 lista.pop(0)  # retiro vertice sem adjacente da lista
 
             else:
-                w = self.busca_Aresta(u, v)
+                w = self.buscaAresta(u, v)
                 if w is not None:
-                    self.relaxa_Vertice(u, v, w)
+                    self.relaxaVertice(u, v, w)
 
         print("Estimativas: ")
         for i in resposta:
             print(i)  # imprimo as respostas
     
-    def BellManFord2(self,origem):
+    def bellManFord2(self,origem):
         acc = 0
-        fonte = self.busca_Vertice(origem)
-        self.inicializa_Fonte(fonte)
-        for i in range(1,len(self.lista_Vertices)-1):
-            for w in self.lista_Arestas:
+        fonte = self.buscaVertice(origem)
+        self.inicializaFonte(fonte)
+        for i in range(1,len(self.vertices)-1):
+            for w in self.arestas:
                 u = w.getOrigem()
                 v = w.getDestino()
                 if u.getEstimativa()+w.getPeso() < v.getEstimativa():
                     v.predecessor= [u.getId()]
                     v.setEstimativa(u.getEstimativa()+w.getPeso())
 
-        for w in self.lista_Arestas:
+        for w in self.arestas:
             u = w.getOrigem()
             v = w.getDestino()
             if u.getEstimativa() + w.getPeso() < v.getEstimativa():
@@ -256,20 +264,20 @@ class Grafo:
         else:
             return False
     
-    def Bellman_Ford(self, origem):
-        fonte = self.busca_Vertice(origem)
-        self.inicializa_Fonte(fonte)
-        for i in range(1,len(self.lista_Vertices)-1):
-            for w in self.lista_Arestas:
+    def bellmanFord(self, origem):
+        fonte = self.buscaVertice(origem)
+        self.inicializaFonte(fonte)
+        for i in range(1,len(self.vertices)-1):
+            for w in self.arestas:
                 u = w.getOrigem()
                 v = w.getDestino()
-                #self.relaxa_Vertice(u, v, w)
+                #self.relaxaVertice(u, v, w)
                 if u.getEstimativa() + w.getPeso() < v.getEstimativa():
                     print(u.getEstimativa(),w.getPeso(), v.getEstimativa())
                     v.setEstimativa(u.getEstimativa() + w.getPeso())
                     v.predecessor=u.getId()  # guarda apenas o id
 
-        for w in self.lista_Arestas:
+        for w in self.arestas:
             u = w.getOrigem()
             v = w.getDestino()
             if u.getEstimativa() + w.getPeso()<v.getEstimativa() :
@@ -277,20 +285,20 @@ class Grafo:
             else:
                 return True  # Exixte ciclo negatio
 
-    def Minimum_spanning_tree(self, origem):  # Prim
-        fonte = self.busca_Vertice(origem)
+    def minimumSpanningTree(self, origem):  # Prim
+        fonte = self.buscaVertice(origem)
         if fonte is None:
             return "Vertice Nulo"
 
-        self.inicializa_Fonte(fonte)
+        self.inicializaFonte(fonte)
         lista = []
-        for i in self.lista_Vertices:
+        for i in self.vertices:
             lista.append(i)
         lista.sort()
         while len(lista) != 0:
             # ordeno a lista baseado na estimativa
             u = lista[0]
-            v = self.busca_Adjacente(u)
+            v = self.buscaAdjacente(u)
 
             if v is None:
                 for i in lista:  # como o vetice u marcou seus adj como visitado nenhum outro vértice visitara
@@ -302,81 +310,81 @@ class Grafo:
                 u.setImput(self.tempo)
                 lista.remove(u)
             else:
-                w = self.busca_Aresta(u, v)
+                w = self.buscaAresta(u, v)
                 if lista.count(v) > 0:
                     if v.getEstimativa() > w.getPeso():
                         v.predecessor = [u.getId()]
                         v.setEstimativa(w.getPeso())
 
-        for u in self.lista_Vertices:
+        for u in self.vertices:
             if len(u.predecessor) > 0:
                 print(u.predecessor, "------", u.getId())
-        self.lista_Vertices.sort(key=lambda u: u.input, reverse=False)
-        for i in self.lista_Vertices:
+        self.vertices.sort(key=lambda u: u.input, reverse=False)
+        for i in self.vertices:
             print(i)
 
-    def is_Cyclic(self):
-        if (len(self.lista_Arestas) > len(self.lista_Vertices) - 1):
+    def grafoCiclico(self):
+        if (len(self.arestas) > len(self.vertices) - 1):
             print("Grafo Cíclico por Nº Aresta : %i > Nº Vértices: %i" % (
-            len(self.lista_Arestas), len(self.lista_Vertices)))
+            len(self.arestas), len(self.vertices)))
         else:
             print("Grafo Acíclico")
 
-    def grafo_Transposto(self):  # w(u,v) passa a ser w(v,u)
-        for i in range(len(self.lista_Arestas)):
-            origem = self.lista_Arestas[0].getOrigem()
-            destino = self.lista_Arestas[0].getDestino()
-            self.lista_Arestas.pop(0)
-            self.lista_Arestas.append(Aresta(destino, origem, 0))
+    def grafoTransposto(self):  # w(u,v) passa a ser w(v,u)
+        for i in range(len(self.arestas)):
+            origem = self.arestas[0].getOrigem()
+            destino = self.arestas[0].getDestino()
+            self.arestas.pop(0)
+            self.arestas.append(Aresta(destino, origem, 0))
 
-    def Strong_component_algorithm(self):
+    def strongComponentAlgorithm(self):
         print("Busca em Profundidade")
-        self.Depth_first_search()
-        self.lista_Vertices.sort(key=lambda u: u.output, reverse=True)  # ordena a lista em ralação a vertice.output
-        for w in self.lista_Arestas:
+        self.depthFirstSearch()
+        self.vertices.sort(key=lambda u: u.output, reverse=True)  # ordena a lista em ralação a vertice.output
+        for w in self.arestas:
             print(w)
-        self.grafo_Transposto()
+        self.grafoTransposto()
         print("Grafo Transposto:")
-        for w in self.lista_Arestas:
+        for w in self.arestas:
             print(w)
-        for i in self.lista_Vertices:
+        for i in self.vertices:
             i.input = 0
             i.output = 0
             i.setVisitado(False)
         print("\nComponetes fortemente Conexos\n")
-        for i in self.lista_Vertices:
+        for i in self.vertices:
             if not i.getVisitado():
                 self.visita(i)
 
-    def cria_Euleriano(self):
+    def criaEuleriano(self):
         pass
 
-    def eh_euleriano(self):
-        for u in self.lista_Vertices:
+    def grafoEuleriano(self):
+        for u in self.vertices:
             if self.grau(u) % 2 is not 0:
                 return False
         return True
 
     def grau(self, u):
         grau = 0
-        for w in self.lista_Arestas:
+        for w in self.arestas:
             if u == w.getOrigem():
                 grau += 1
         return grau
 
-    def eh_Ponto(self, u):
-        for v in self.lista_Vertices:
+    def ponto(self, u):
+        for v in self.vertices:
             v.setVisitado(False)
 
         u.setVisitado(True)
-        self.visita(self.busca_Adjacente(u))
-        for v in self.lista_Vertices:
+        self.visita(self.buscaAdjacente(u))
+        for v in self.vertices:
             if v.getVisitado() == False:
                 return True
 
-    def Articulation(self):
+    def articulation(self):
         art = []
-        for u in self.lista_Vertices:
-            if self.eh_Ponto(u):
+        for u in self.vertices:
+            if self.ponto(u):
                 art.append(u.getId())
         print("Pontos de Articulação", art)
