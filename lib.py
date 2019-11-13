@@ -102,22 +102,22 @@ class Grafo:
         if self.direcionado == False:
             self.arestas.append(Aresta(destino_aux, origem_aux, peso))  # Aresta(u,v) e Aresta(v,u)
 
- def buscaAresta(self, u, v):  # Método recebe dois objetos do tipo Vértice
+    def buscaAresta(self, u, v):  # Método recebe dois objetos do tipo Vertice
         for w in self.arestas:
             origem = w.getOrigem()
             destino = w.getDestino()
             if origem.getId() == u.getId() and destino.getId() == v.getId():
                 return w
 
-   def matrixAdjacencia(self):
+    def matrixAdjacencia(self, origem, destino):
         destino_Aux = self.buscaVertice(destino)
         if len(destino_Aux.predecessor) == 0:
             print("Não há caminho")
         else:
             print(destino)
-            self.imprime_Grafo(origem, destino)
+            self.imprimeGrafo(origem, destino)
 
-   def imprimeGrafocomDestino(self, origem, destino):
+    def imprimeGrafocomDestino(self, origem, destino):
         destino_Aux = self.buscaVertice(destino)
         if len(destino_Aux.predecessor) == 0:
             print("Não há caminho")
