@@ -1,4 +1,79 @@
-# Grafo
+class Vertice():
+    def __init__(self, id):
+        self.id = id
+        self.estimativa = 999999
+        self.input = 0
+        self.output = 0
+        self.visitado = False
+        self.predecessor = []
+
+    def setVisitado(self, valor):
+        self.visitado = valor
+
+    def getVisitado(self):
+        return self.visitado
+
+    def setId(self, id):
+        self.id = id
+
+    def getId(self):
+        return self.id
+
+    def setInput(self, inp):
+        self.input = inp
+
+    def setOutput(self, out):
+        self.output = out
+
+    def setEstimativa(self, estimativa):
+        self.estimativa = estimativa
+
+    def getEstimativa(self):
+        return self.estimativa
+
+    def __str__(self):
+        return (" Vertice  : %s \n Estimativa: %i \n Tempo(%i\%i): " % (
+            self.id, self.estimativa, self.input, self.output))  # imprimir o predecesso
+
+    def __lt__(self, v):
+        return self.estimativa < v.estimativa
+
+    def __eq__(self, v):
+        return self.estimativa == v.estimativa
+
+    def __eq__(self, v):
+        return self.id == v.id
+
+    def __gt__(self, v):
+        return self.estimativa > v.estimativa
+
+class Aresta():
+	def __init__(self,origem,destino,peso = 0):
+		self.origem = origem
+		self.destino = destino
+		self.peso = peso
+				
+	def getOrigem(self):
+		return self.origem
+		
+	def getDestino(self):
+		return self.destino
+	
+	def setPeso(self,peso):
+		self.peso = peso
+		
+	def	getPeso(self):
+		return self.peso
+		
+	def setOrigem(self,vertice):
+		self.origem = vertice
+		
+	def setDestino(self,vertice):
+		self.destino = vertice
+	
+	def __str__(self):
+		return "A(%s----%i---->%s)" % (self.origem.getId(),self.peso,self.destino.getId())
+
 class Grafo:
     def __init__(self, direcionado=True):
         self.lista_Vertices = []
@@ -7,7 +82,6 @@ class Grafo:
         self.tempo = 0
 
     def novo_Vertice(self, identificador):
-        # string = input(str("Identificador do Vertice: "))
         self.lista_Vertices.append(Vertice(identificador))
 
     def busca_Aresta(self, u, v):  # Método recebe dois objetos do tipo Vértice
@@ -51,8 +125,6 @@ class Grafo:
         else:
             return None
 
-    ####################################################################
-
     def Depth_first_search(self):
         self.tempo = 0
         for v in self.lista_Vertices:
@@ -78,16 +150,12 @@ class Grafo:
         u.setOutput(self.tempo)
         print("Voltando para: ", u.predecessor)
 
-    ####################################################################
-
     def inicializa_Fonte(self, fonte):  # Função usado no BFS e Dijkstra Método recebe um Objeto
         for v in self.lista_Vertices:
             v.setEstimativa(99999)
             v.setVisitado(False)
         fonte.setVisitado(True)
         fonte.setEstimativa(0)
-
-    ####################################################################
 
     def Breadth_first_search(self, identificador):
         fonte = self.busca_Vertice(identificador)
@@ -113,7 +181,7 @@ class Grafo:
     def imprime_Grafo_com_Destino(self, origem, destino):
         destino_Aux = self.busca_Vertice(destino)
         if len(destino_Aux.predecessor) == 0:
-            print("Não ha caminho")
+            print("Não há caminho")
         else:
             print(destino)
             self.imprime_Grafo(origem, destino)
@@ -124,12 +192,10 @@ class Grafo:
         else:
             destino_Aux = self.busca_Vertice(destino)
             if len(destino_Aux.predecessor) == 0:
-                print("Não ha caminho")
+                print("Não há caminho")
             else:
                 print(destino_Aux.predecessor[0])
                 self.imprime_Grafo(origem, destino_Aux.predecessor[0])
-
-    ####################################################################
 
     def relaxa_Vertice(self, u, v, w):
         if v.getEstimativa() > (u.getEstimativa() + w.getPeso()):
@@ -139,7 +205,7 @@ class Grafo:
     def Dijkstra(self, origem):
         fonte = self.busca_Vertice(origem)
         if fonte is None:
-            return "Vertce Nulo"
+            return "Vértice Nulo"
 
         self.inicializa_Fonte(fonte)
         lista = []
@@ -167,7 +233,6 @@ class Grafo:
         print("Estimativas: ")
         for i in resposta:
             print(i)  # imprimo as respostas
-    ####################################################################
     
     def BellManFord2(self,origem):
         acc = 0
@@ -190,7 +255,7 @@ class Grafo:
             return True
         else:
             return False
-    ####################################################################
+    
     def Bellman_Ford(self, origem):
         fonte = self.busca_Vertice(origem)
         self.inicializa_Fonte(fonte)
@@ -212,7 +277,6 @@ class Grafo:
             else:
                 return True  # Exixte ciclo negatio
 
-    ####################################################################
     def Minimum_spanning_tree(self, origem):  # Prim
         fonte = self.busca_Vertice(origem)
         if fonte is None:
@@ -251,7 +315,6 @@ class Grafo:
         for i in self.lista_Vertices:
             print(i)
 
-    ####################################################################
     def is_Cyclic(self):
         if (len(self.lista_Arestas) > len(self.lista_Vertices) - 1):
             print("Grafo Cíclico por Nº Aresta : %i > Nº Vértices: %i" % (
@@ -259,7 +322,6 @@ class Grafo:
         else:
             print("Grafo Acíclico")
 
-    ####################################################################
     def grafo_Transposto(self):  # w(u,v) passa a ser w(v,u)
         for i in range(len(self.lista_Arestas)):
             origem = self.lista_Arestas[0].getOrigem()
@@ -286,7 +348,6 @@ class Grafo:
             if not i.getVisitado():
                 self.visita(i)
 
-    ####################################################################
     def cria_Euleriano(self):
         pass
 
@@ -303,7 +364,6 @@ class Grafo:
                 grau += 1
         return grau
 
-    ####################################################################
     def eh_Ponto(self, u):
         for v in self.lista_Vertices:
             v.setVisitado(False)
@@ -320,4 +380,3 @@ class Grafo:
             if self.eh_Ponto(u):
                 art.append(u.getId())
         print("Pontos de Articulação", art)
-        ####################################################################
